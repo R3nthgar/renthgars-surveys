@@ -13,7 +13,6 @@ import {
   BetterTextArea,
   RichEditor,
   Survey,
-  surveyTemplates,
   cookies,
   CustomChart,
   sum,
@@ -26,6 +25,7 @@ import {
   getExists,
   getPassword,
 } from "../components/dataModifier";
+import { surveyTemplates } from "../components/surveyTemplates";
 export default function Home() {
   const [overpage, setOverpage] = useState<
     | { type: "deleting" | "publishing" }
@@ -217,7 +217,7 @@ export default function Home() {
                 >
                   Blank Survey
                 </button>
-                {surveyTemplates.map((surveyTemplate) => (
+                {Object.values(surveyTemplates).map((surveyTemplate) => (
                   <button
                     key={surveyTemplate.name}
                     onClick={() => {
@@ -268,7 +268,7 @@ export default function Home() {
                 ))}
                 <button
                   onClick={() => {
-                    surveyTemplates.length
+                    Object.keys(surveyTemplates).length
                       ? setCreatingSurvey(true)
                       : createSurvey({ reset: true });
                   }}
