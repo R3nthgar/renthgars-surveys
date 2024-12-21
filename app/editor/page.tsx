@@ -25,7 +25,7 @@ import {
   getExists,
   getPassword,
 } from "../components/dataModifier";
-import { surveyTemplates } from "../components/templates";
+import { surveyTemplates } from "../components/surveyTemplates";
 export default function Home() {
   const [overpage, setOverpage] = useState<
     | { type: "deleting" | "publishing" }
