@@ -16,7 +16,7 @@ To continue using these functions, create an environmental variable called ENCOD
 
 If you don't want to use these functions, replace the functions in app/components/dataModifier.ts, under //Encoding functions, and where it calls it in the Sign Up button in app/editor/page.tsx.
 
-## Running
+## Running the server
 
 Running the development server:
 
