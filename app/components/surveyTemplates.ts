@@ -1,3 +1,3 @@
 import { surveyClass } from "./survey";
 
-export const surveyTemplates: Record<string, surveyClass> = {};
+export const surveyTemplates: surveyClass[] = [];

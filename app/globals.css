@@ -4,7 +4,7 @@
 }
 
 body {
-  font-size: 30px;
+  font-size: 25px;
 }
 button {
   transition: scale 0.25s;
@@ -77,9 +77,9 @@ textarea::-webkit-scrollbar {
   display: block;
   background: white;
   border: solid;
-  border-radius: 15px;
-  height: 40px;
-  width: 40px;
+  border-radius: 10px;
+  height: 35px;
+  width: 35px;
 }
 .delete::before {
   content: "X";
@@ -95,10 +95,12 @@ textarea::-webkit-scrollbar {
   overflow-y: auto;
   margin: 25px auto;
 }
+.topbar > * > *,
 .borderer {
   background: white;
   border: solid;
 }
+.topbar > * > button,
 div.borderer,
 button.borderer {
   border-radius: 25px;
@@ -239,6 +241,11 @@ textarea {
   border-radius: 0;
   padding: 10px;
 }
-.topbar > * > button {
-  width: 250px;
+.topbar > * > * {
+  width: 17.5vw;
+}
+#topbar {
+  z-index: 1;
+  position: sticky;
+  top: 0;
 }

@@ -1,6 +1,6 @@
 ## Getting Started
 
-This project uses Firestore to store it's data.
+This project uses Firestore to store its data.
 
 To continue using Firestore, [http://localhost:3000](create a database).
 Once you've done that, you need a service account and private key. [https://console.cloud.google.com/iam-admin/serviceaccounts](Go to IAM & admin > Service accounts) in the Google Cloud console. Generate a new private key and save the JSON file. Then create a new .env file and set the following environmental variables:
@@ -30,3 +30,7 @@ Running the production server:
 npm run build
 npm run start
 ```
+
+## Templates
+
+You can add default surveys for users to select from when creating a survey, by creating your own survey, downloading it as a JSON, and pasting the contents into the array in app/components/surveyTemplates.ts
