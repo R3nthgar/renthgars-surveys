@@ -1,3 +1,3 @@
-import { surveyClass } from "./survey";
+import { Survey } from "./survey";
 
-export const surveyTemplates: surveyClass[] = [];
+export const surveyTemplates: Survey[] = [];

@@ -5,33 +5,73 @@
 import { useRef, useState, useEffect } from "react";
 import {
   downloadCSV,
-  group,
-  IDgen,
-  questionClass,
-  surveyClass,
-  userClass,
-  BetterTextArea,
-  RichEditor,
+  Group,
+  Question,
   Survey,
-  cookies,
+  User,
+  DisplaySurvey,
   CustomChart,
-  sum,
 } from "../components/survey";
 import {
   addDoc,
   delDoc,
-  encode,
   getData,
   getExists,
   getPassword,
-} from "../components/dataModifier";
+} from "../components/firestore";
 import { surveyTemplates } from "../components/surveyTemplates";
+import { encrypt } from "../components/encrypter";
+import { BetterTextArea, RichEditor } from "../components/textEditor";
+import { cookies, IDgen } from "../components/utilities";
+
+function createSurvey(
+  {
+    survey,
+    categories,
+    user,
+    username,
+    setMode,
+  }: {
+    survey: { current: Survey | undefined };
+    categories: { current: string[] };
+    user: { current: User | undefined };
+    username: { current: string };
+    setMode: (a: any) => void;
+  },
+  surveyTemplate?: Survey
+) {
+  survey.current = new Survey(
+    surveyTemplate || {
+      name: "New Survey",
+      questions: [],
+      startScreen: '<div style="text-align: center">Click Below To Start</div>',
+      finishScreen:
+        '<div style="text-align: center">You\'ve Finished The Survey</div>',
+    }
+  );
+  categories.current = Object.keys(survey.current.categories);
+  if (user.current) {
+    user.current.surveys[survey.current.ID] = survey.current;
+    addDoc({
+      collection: "users",
+      doc: username.current,
+      data: JSON.parse(JSON.stringify(user.current)),
+    });
+  }
+  const url = new URL(window.location.href);
+  const searchParams = new URLSearchParams(url.search);
+  searchParams.set("survey", survey.current.ID);
+  url.search = searchParams.toString();
+  window.history.replaceState({}, "", url.toString());
+  setMode({});
+}
+
 export default function Home() {
   const [overpage, setOverpage] = useState<
     | { type: "deleting" | "publishing" }
     | {
         type: "importing";
-        group: group;
+        group: Group;
         importType: "simple" | "complex";
         dataType: "MCQ" | "MSQ";
         optPerQues: number;
@@ -39,48 +79,21 @@ export default function Home() {
     | undefined
   >(undefined);
   const [mode, setMode] = useState<
-    "previewing" | "creatingSurvey" | "showingResults" | Record<string, never>
+    "previewing" | "choosingTemplate" | "showingResults" | Record<string, never>
   >({});
   let saved = false;
-  const createSurvey = (surveyTemplate?: surveyClass) => {
-    survey.current = new surveyClass(
-      surveyTemplate || {
-        name: "New Survey",
-        questions: [],
-        startScreen:
-          '<div style="text-align: center">Click Below To Start</div>',
-        finishScreen:
-          '<div style="text-align: center">You\'ve Finished The Survey</div>',
-      }
-    );
-    categories.current = Object.keys(survey.current.categories);
-    if (user.current) {
-      user.current.surveys[survey.current.ID] = survey.current;
-      addDoc({
-        collection: "users",
-        doc: username.current,
-        data: JSON.parse(JSON.stringify(user.current)),
-      });
-    }
-    const url = new URL(window.location.href);
-    const searchParams = new URLSearchParams(url.search);
-    searchParams.set("survey", survey.current.ID);
-    url.search = searchParams.toString();
-    window.history.replaceState({}, "", url.toString());
-    setMode({});
-  };
   const [started, start] = useState(false);
   const [proxy, update] = useState({});
   proxy;
   const username = useRef("");
   const categories = useRef<string[]>([]);
-  const user = useRef<userClass | undefined>(undefined);
+  const user = useRef<User | undefined>(undefined);
   const password = useRef("");
   const results = useRef<Record<string, Record<string, string>> | undefined>(
     undefined
   );
   const questionResults = useRef<Record<string, string[]>>({});
-  const survey = useRef<surveyClass | undefined>(undefined);
+  const survey = useRef<Survey | undefined>(undefined);
   async function getUser(surveyID?: string) {
     if (!user.current) {
       const trueUser = await getPassword(
@@ -89,7 +102,7 @@ export default function Home() {
         password.current
       );
       user.current = trueUser
-        ? new userClass({ password: "", surveys: {}, ...trueUser })
+        ? new User({ password: "", surveys: {}, ...trueUser })
         : undefined;
     }
     if (user.current && surveyID) {
@@ -180,7 +193,10 @@ export default function Home() {
                   collection: "users",
                   doc: username.current,
                   data: {
-                    password: await encode(password.current),
+                    password: encrypt(
+                      password.current,
+                      process.env.ENCRYPTER_PRIVATEKEY
+                    ),
                     surveys: {},
                   },
                 });
@@ -197,13 +213,22 @@ export default function Home() {
         </div>
       </>
     ) : !survey.current ? (
-      mode == "creatingSurvey" ? (
+      mode == "choosingTemplate" ? (
         <>
           <div className="header">Choose Template</div>
+          <button
+            style={{ position: "absolute", top: 10, right: 10, width: 200 }}
+            className="borderer"
+            onClick={() => {
+              setMode({});
+            }}
+          >
+            Back
+          </button>
           <div id="surveyContainer">
             <button
               onClick={() => {
-                createSurvey();
+                createSurvey({ survey, categories, user, username, setMode });
               }}
             >
               Blank Survey
@@ -212,7 +237,10 @@ export default function Home() {
               <button
                 key={surveyTemplate.name}
                 onClick={() => {
-                  createSurvey(surveyTemplate);
+                  createSurvey(
+                    { survey, categories, user, username, setMode },
+                    surveyTemplate
+                  );
                 }}
               >
                 {surveyTemplate.name}
@@ -258,8 +286,14 @@ export default function Home() {
             <button
               onClick={() => {
                 Object.keys(surveyTemplates).length
-                  ? setMode("creatingSurvey")
-                  : createSurvey();
+                  ? setMode("choosingTemplate")
+                  : createSurvey({
+                      survey,
+                      categories,
+                      user,
+                      username,
+                      setMode,
+                    });
               }}
             >
               Create New Survey
@@ -421,7 +455,7 @@ export default function Home() {
           </div>
         </div>
         {mode == "previewing" ? (
-          <Survey survey={survey.current} />
+          <DisplaySurvey survey={survey.current} />
         ) : (
           <>
             {mode == "showingResults" ? (
@@ -499,7 +533,7 @@ export default function Home() {
                     <div className="groupEditor">
                       <div className="centered">Average Categories</div>
                       <div className="choiceContainer small">
-                        {categories.current.map((category, index) => (
+                        {categories.current.map((category) => (
                           <div
                             key={category}
                             style={{
@@ -508,15 +542,14 @@ export default function Home() {
                           >
                             {category}:{" "}
                             {Math.floor(
-                              sum(
-                                Object.values(results.current || {}).map(
-                                  (val) => {
-                                    return parseInt(
-                                      val[category].replace("%", "")
-                                    );
-                                  }
-                                )
-                              ) / Object.keys(results.current || {}).length
+                              Object.values(results.current || {})
+                                .map((val) => {
+                                  return parseInt(
+                                    val[category].replace("%", "")
+                                  );
+                                })
+                                .reduce((a, b) => a + b) /
+                                Object.keys(results.current || {}).length
                             )}
                           </div>
                         ))}
@@ -636,8 +669,10 @@ export default function Home() {
                 <div className="groupEditor">
                   <div className="centered">Start Page</div>
                   <RichEditor
-                    parent={survey.current}
-                    keyVal="startScreen"
+                    val={survey.current.startScreen}
+                    set={(str) => {
+                      if (survey.current) survey.current.startScreen = str;
+                    }}
                     style={{
                       minHeight: "25lvh",
                       width: "90%",
@@ -706,8 +741,10 @@ export default function Home() {
                       Import Data
                     </button>
                     <RichEditor
-                      parent={group}
-                      keyVal="defaultText"
+                      val={group.defaultText}
+                      set={(str) => {
+                        group.defaultText = str;
+                      }}
                       placeholder="Default Text"
                       style={{
                         minHeight: "15lvh",
@@ -756,8 +793,10 @@ export default function Home() {
                           </div>
 
                           <RichEditor
-                            parent={question}
-                            keyVal="name"
+                            val={question.name}
+                            set={(str) => {
+                              question.name = str;
+                            }}
                             placeholder="Displayed Text"
                             style={{
                               minHeight: "15lvh",
@@ -791,7 +830,7 @@ export default function Home() {
                                               justifyContent: "space-evenly",
                                               margin: "10px",
                                               padding: "10px 25px",
-                                              background: "lightgray",
+                                              background: "var(--backColor2)",
                                               position: "relative",
                                               borderRadius: "15px",
                                             }}
@@ -846,7 +885,7 @@ export default function Home() {
                                               justifyContent: "space-evenly",
                                               margin: "10px",
                                               padding: "10px 25px",
-                                              background: "lightgray",
+                                              background: "var(--backColor2)",
                                               borderRadius: "15px",
                                             }}
                                             className="borderer"
@@ -940,7 +979,7 @@ export default function Home() {
                         className="bar"
                         onClick={() => {
                           group.questions.push(
-                            new questionClass({
+                            new Question({
                               name: "",
                               type: "MCQ",
                               values: [],
@@ -959,7 +998,7 @@ export default function Home() {
                   onClick={() => {
                     if (survey.current)
                       survey.current.questions.push(
-                        new group({
+                        new Group({
                           name: `New Group ${
                             survey.current.questions.length + 1
                           }`,
@@ -974,8 +1013,10 @@ export default function Home() {
                 <div className="groupEditor">
                   <div className="centered">End Page</div>
                   <RichEditor
-                    parent={survey.current}
-                    keyVal="finishScreen"
+                    val={survey.current.finishScreen}
+                    set={(str) => {
+                      if (survey.current) survey.current.finishScreen = str;
+                    }}
                     style={{
                       minHeight: "25lvh",
                       width: "90%",

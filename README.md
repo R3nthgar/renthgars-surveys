@@ -8,13 +8,13 @@ Set FIREBASE_PRIVATEKEY to your private key.
 Set FIREBASE_PROJECTID to your project id.
 Set FIREBASE_CLIENTEMAIL to your client email.
 
-If you're not using Firestore, then replace the functions in app/components/dataModifier.ts, under //Firestore functions
+If you're not using Firestore, then replace the functions in app/components/dataModifier.ts.
 
 This project also uses functions to secure passwords.
 
-To continue using these functions, create an environmental variable called ENCODED_PRIVATEKEY, and set it to a random string.
+To continue using these functions, create an environmental variable called ENCRYPTER_PRIVATEKEY, and set it to a random string.
 
-If you don't want to use these functions, replace the functions in app/components/dataModifier.ts, under //Encoding functions, and where it calls it in the Sign Up button in app/editor/page.tsx.
+If you don't want to use these functions, replace the functions in app/components/encrypter.ts, and where it calls it in the Sign Up button in app/editor/page.tsx.
 
 ## Running the server
 

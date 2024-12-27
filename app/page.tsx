@@ -3,11 +3,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useRef, useState, useEffect } from "react";
-import { Survey, surveyClass } from "./components/survey";
-import { getData } from "./components/dataModifier";
+import { DisplaySurvey, Survey } from "./components/survey";
+import { getData } from "./components/firestore";
 export default function Home() {
   const [started, start] = useState(false);
-  const survey = useRef<surveyClass | undefined>(undefined);
+  const survey = useRef<Survey | undefined>(undefined);
   const surveyID = useRef<string | undefined>(undefined);
   useEffect(() => {
     if (!started) {
@@ -102,7 +102,7 @@ export default function Home() {
             </div>
           </>
         ) : (
-          <Survey survey={survey.current} recordData={true} />
+          <DisplaySurvey survey={survey.current} recordData={true} />
         )}
       </>
     );
