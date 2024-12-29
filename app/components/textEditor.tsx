@@ -3,7 +3,7 @@
 
 import { CSSProperties, MouseEventHandler, ReactElement } from "react";
 
-export const RichEditor = ({
+export const RichTextEditor = ({
   val,
   style,
   placeholder,
@@ -32,7 +32,7 @@ export const RichEditor = ({
   );
 };
 
-export function BetterTextArea({
+export function TextEditor({
   parent,
   keyVal,
   placeholder,

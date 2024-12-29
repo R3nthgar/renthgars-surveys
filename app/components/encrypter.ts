@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 function strToHash(str: string) {
   let [h1, h2, h3, h4] = [1779033703, 3144134277, 1013904242, 2773480762];
   for (let i = 0, k; i < str.length; i++) {
@@ -35,17 +33,23 @@ function randomSeed(seed: unknown) {
   c = (c + t) | 0;
   return (t >>> 0) / 4294967296;
 }
-function shuffle(arr: unknown[], seed: any = Math.random(), reverse?: boolean) {
-  let tempSeed = seed;
+function shuffle(
+  arr: unknown[],
+  seed: unknown = Math.random(),
+  reverse?: boolean
+) {
   function random() {
-    tempSeed = randomSeed(tempSeed);
-    return tempSeed;
+    seed = randomSeed(seed);
+    return seed;
   }
   const tempArr = [...arr];
   if (!reverse) {
     return new Array(arr.length)
       .fill(undefined)
-      .map(() => tempArr.splice(Math.floor(random() * tempArr.length), 1)[0]);
+      .map(
+        () =>
+          tempArr.splice(Math.floor(Number(random()) * tempArr.length), 1)[0]
+      );
   } else {
     const retArr = new Array(arr.length).fill(undefined);
     const shuffled: number[] = shuffle(
@@ -61,7 +65,7 @@ function shuffle(arr: unknown[], seed: any = Math.random(), reverse?: boolean) {
 const encryptLib = new Array(95)
   .fill(undefined)
   .map((value, index) => String.fromCharCode(index + 32));
-export const encrypt = (text: string, seed: any) => {
+export const encrypt = (text: string, seed: unknown) => {
   const chrArr = shuffle(encryptLib, seed);
   let encrypted = "";
   for (let i = 0; i < text.length; i++) {
@@ -75,7 +79,7 @@ export const encrypt = (text: string, seed: any) => {
   }
   return shuffle(encrypted.split(""), seed).join("");
 };
-export const decrypt = (text: string, seed: any) => {
+export const decrypt = (text: string, seed: unknown) => {
   const newtext = shuffle(text.split(""), seed, true).join("");
   const chrArr = shuffle(encryptLib, seed);
   let decrypted = "";

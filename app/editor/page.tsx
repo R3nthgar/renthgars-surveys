@@ -19,9 +19,9 @@ import {
   getExists,
   getPassword,
 } from "../components/firestore";
-import { surveyTemplates } from "../components/surveyTemplates";
+import { surveyTemplates } from "../surveyTemplates";
 import { encrypt } from "../components/encrypter";
-import { BetterTextArea, RichEditor } from "../components/textEditor";
+import { TextEditor, RichTextEditor } from "../components/textEditor";
 import { cookies, IDgen } from "../components/utilities";
 
 function createSurvey(
@@ -668,7 +668,7 @@ export default function Home() {
                 </div>
                 <div className="groupEditor">
                   <div className="centered">Start Page</div>
-                  <RichEditor
+                  <RichTextEditor
                     val={survey.current.startScreen}
                     set={(str) => {
                       if (survey.current) survey.current.startScreen = str;
@@ -678,7 +678,7 @@ export default function Home() {
                       width: "90%",
                       margin: "25px auto",
                     }}
-                  ></RichEditor>
+                  ></RichTextEditor>
                 </div>
                 {survey.current.questions.map((group, index) => (
                   <div key={group.name} className="groupEditor">
@@ -740,7 +740,7 @@ export default function Home() {
                     >
                       Import Data
                     </button>
-                    <RichEditor
+                    <RichTextEditor
                       val={group.defaultText}
                       set={(str) => {
                         group.defaultText = str;
@@ -752,7 +752,7 @@ export default function Home() {
                         margin: "25px auto",
                         borderRadius: "15px",
                       }}
-                    ></RichEditor>
+                    ></RichTextEditor>
                     <br></br>
                     <div className="borderer" style={{ padding: "50px" }}>
                       {group.questions.map((question, index) => (
@@ -792,7 +792,7 @@ export default function Home() {
                             </select>
                           </div>
 
-                          <RichEditor
+                          <RichTextEditor
                             val={question.name}
                             set={(str) => {
                               question.name = str;
@@ -804,11 +804,11 @@ export default function Home() {
                               margin: "25px auto",
                               borderRadius: "15px",
                             }}
-                          ></RichEditor>
+                          ></RichTextEditor>
                           {!["TXT", "DIS"].includes(question.type) ? (
                             <div className="choiceContainer">
                               {question.values.map((value, index) => (
-                                <BetterTextArea
+                                <TextEditor
                                   parent={question.values[index]}
                                   keyVal="option"
                                   placeholder="Enter Option Here"
@@ -947,7 +947,7 @@ export default function Home() {
                                       </div>
                                     ) : undefined
                                   }
-                                ></BetterTextArea>
+                                ></TextEditor>
                               ))}
                               <button
                                 onClick={() => {
@@ -1012,7 +1012,7 @@ export default function Home() {
                 </button>
                 <div className="groupEditor">
                   <div className="centered">End Page</div>
-                  <RichEditor
+                  <RichTextEditor
                     val={survey.current.finishScreen}
                     set={(str) => {
                       if (survey.current) survey.current.finishScreen = str;
@@ -1022,7 +1022,7 @@ export default function Home() {
                       width: "90%",
                       margin: "25px auto",
                     }}
-                  ></RichEditor>
+                  ></RichTextEditor>
                 </div>
               </>
             )}
