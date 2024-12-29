@@ -1,13 +1,18 @@
 @tailwind base;
-.ql-container {
-  font-size: inherit !important;
+@tailwind components;
+@tailwind utilities;
+:root {
+  --backColor2: rgb(200, 200, 200);
 }
-
 body {
-  font-size: 30px;
+  font-size: 25px;
+}
+* {
+  border: none;
+  border-width: 2px !important;
 }
 button {
-  transition: scale 0.25s;
+  transition: background 0.25s;
 }
 table * input {
   border: none !important;
@@ -58,7 +63,7 @@ select,
   text-align: center;
 }
 button:hover {
-  scale: 1.05;
+  background: rgb(230, 230, 230);
 }
 button.bar:hover {
   scale: 1.01;
@@ -77,9 +82,9 @@ textarea::-webkit-scrollbar {
   display: block;
   background: white;
   border: solid;
-  border-radius: 15px;
-  height: 40px;
-  width: 40px;
+  border-radius: 10px;
+  height: 35px;
+  width: 35px;
 }
 .delete::before {
   content: "X";
@@ -95,10 +100,12 @@ textarea::-webkit-scrollbar {
   overflow-y: auto;
   margin: 25px auto;
 }
+.topbar > * > *,
 .borderer {
   background: white;
   border: solid;
 }
+.topbar > * > button,
 div.borderer,
 button.borderer {
   border-radius: 25px;
@@ -109,7 +116,7 @@ textarea {
   border-radius: 15px;
 }
 .borderer > .bar {
-  background: lightgray;
+  background: var(--backColor2);
   border: solid;
   border-radius: 25px;
   padding: 25px;
@@ -141,7 +148,7 @@ textarea {
   margin: 50px auto;
   height: min-content;
   padding: 25px;
-  background: lightgray;
+  background: var(--backColor2);
   border: solid;
   border-radius: 25px;
   overflow: hidden;
@@ -159,15 +166,38 @@ textarea {
 }
 #questionContainer > * {
   width: 500px;
-  border: 5px solid;
   min-height: 250px;
   padding: 5px 10px;
   margin: 25px 50px;
   resize: none;
   border-radius: 15px;
 }
-#questionContainer > .selected {
-  background-color: aqua;
+#questionContainer > *,
+#buttonContainer > * {
+  background: whitesmoke;
+  scale: 1;
+  transition: background 0.25s;
+}
+#questionContainer > .selected,
+#buttonContainer > * {
+  background-color: #cbd5da;
+}
+#questionContainer > .selected:focus,
+#buttonContainer > button:focus {
+  background-color: #b6c4cb;
+}
+#buttonContainer > button:hover {
+  background-color: #b6c4cb;
+}
+#questionContainer > button:hover:not(.selected) {
+  background-color: lightgray;
+}
+#questionContainer > button:focus:not(.selected) {
+  background-color: rgb(180, 180, 180);
+}
+#questionContainer > button:focus,
+#buttonContainer > button:focus {
+  outline: solid black;
 }
 #buttonContainer,
 .buttonContainer {
@@ -177,7 +207,6 @@ textarea {
 }
 #buttonContainer > * {
   width: 300px;
-  border: 5px solid;
   height: min-content;
   padding: 5px 10px;
   border-radius: 50px;
@@ -239,6 +268,11 @@ textarea {
   border-radius: 0;
   padding: 10px;
 }
-.topbar > * > button {
-  width: 250px;
+.topbar > * > * {
+  width: 17.5%;
+}
+#topbar {
+  z-index: 1;
+  position: sticky;
+  top: 0;
 }
