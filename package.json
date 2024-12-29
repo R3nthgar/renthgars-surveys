@@ -14,7 +14,9 @@
     "next": "^15.1.3",
     "react-apexcharts": "^1.5.0",
     "react-dom": "^18",
-    "react-hook-form": "^7.53.2"
+    "react-hook-form": "^7.53.2",
+    "renthgars-encrypter": "^1.0.0",
+    "renthgars-rng": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

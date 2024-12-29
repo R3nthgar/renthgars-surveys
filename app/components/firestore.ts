@@ -2,7 +2,7 @@
 
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { decrypt } from "./encrypter";
+import { decrypt } from "renthgars-encrypter";
 console.log(process.env.FIREBASE_PROJECTID);
 if (!getApps().length)
   initializeApp({
