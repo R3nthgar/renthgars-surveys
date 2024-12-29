@@ -2,8 +2,8 @@
 
 This project uses Firestore to store its data.
 
-To continue using Firestore, [https://firebase.google.com/docs/firestore/quickstart](create a database).
-Once you've done that, you need a service account and private key. [https://console.cloud.google.com/iam-admin/serviceaccounts](Go to IAM & admin > Service accounts) in the Google Cloud console. Generate a new private key and save the JSON file. Then create a new .env file and set the following environmental variables:
+To continue using Firestore, [create a database](https://firebase.google.com/docs/firestore/quickstart).
+Once you've done that, you need a service account and private key. [Go to IAM & admin > Service accounts](https://console.cloud.google.com/iam-admin/serviceaccounts) in the Google Cloud console. Generate a new private key and save the JSON file. Then create a new .env file and set the following environmental variables:
 Set FIREBASE_PRIVATEKEY to your private key.
 Set FIREBASE_PROJECTID to your project id.
 Set FIREBASE_CLIENTEMAIL to your client email.
