@@ -276,3 +276,27 @@ textarea {
   position: sticky;
   top: 0;
 }
+.richtexteditor {
+  display: flex;
+  position: relative;
+  border-radius: 15px !important;
+  height: fit-content;
+}
+
+.richtexteditor > * {
+  border-radius: 15px;
+  height: 100%;
+  width: 100%;
+  padding: 25px;
+  word-break: break-all;
+}
+.richtexteditor > *:first-child {
+  text-align: center;
+  opacity: 0.5;
+}
+
+.richtexteditor > *:last-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
