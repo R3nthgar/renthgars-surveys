@@ -1,10 +1,8 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useRef, useState, useEffect } from "react";
 import { DisplaySurvey, Survey } from "./components/survey";
-import { getData } from "./components/firestore";
+import { getDoc } from "./components/firestore";
 export default function Home() {
   const [started, start] = useState(false);
   const survey = useRef<Survey | undefined>(undefined);
@@ -16,7 +14,7 @@ export default function Home() {
           new URLSearchParams(window.location.search).get("survey") ||
           undefined;
         if (surveyID.current) {
-          const docs = await getData("rules", surveyID.current);
+          const docs = await getDoc("rules", surveyID.current);
           if (docs && !survey.current) {
             survey.current = {
               ...docs,

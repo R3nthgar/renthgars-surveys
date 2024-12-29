@@ -1,6 +1,5 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 
 import dynamic from "next/dynamic";
@@ -79,12 +78,12 @@ export function DisplaySurvey({
             ))
         );
         categories.current.push(totalCat);
-        const temp: Record<string, any> = {};
+        const temp: Record<string, Record<string, string>> = {};
         temp[IDgen()] = {
           Timestamp: new Date().toUTCString(),
           ...results.current,
           ...Object.entries(totalCat).reduce(
-            (res: Record<string, any>, [key, val]) => (
+            (res: Record<string, string>, [key, val]) => (
               (res[key] = val + "%"), res
             ),
             {}
@@ -213,7 +212,7 @@ export function QuestionArea({
   question: Question;
   curResult: MutableRefObject<string[]>;
 }) {
-  const [proxy, update] = useState({});
+  const [, update] = useState({});
   return (
     <div id="questionContainer">
       {!["TXT", "DIS"].includes(question.type) ? (

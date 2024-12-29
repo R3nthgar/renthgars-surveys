@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { CSSProperties, MouseEventHandler, ReactElement } from "react";
 
 export const RichTextEditor = ({
@@ -14,38 +11,49 @@ export const RichTextEditor = ({
   placeholder?: string;
   set: (str: string) => void;
 }) => {
+  console.log([val?.replace(/<[^>]*>/g, "")]);
   return (
-    <div
-      style={{
-        padding: "25px",
-        borderRadius: "15px",
-        ...style,
-      }}
-      contentEditable="true"
-      className="borderer"
-      dangerouslySetInnerHTML={val ? { __html: val } : undefined}
-      onInput={(e) => {
-        val = e.currentTarget.innerHTML;
-        set(e.currentTarget.innerHTML);
-      }}
-    />
+    <div className="borderer richtexteditor" style={style}>
+      <div>{val?.replace(/<[^>]*>/g, "") || placeholder}</div>
+      <div
+        style={{
+          background: val?.replace(/<[^>]*>/g, "") ? "inherit" : "none",
+        }}
+        contentEditable="true"
+        dangerouslySetInnerHTML={val ? { __html: val } : undefined}
+        onInput={(e) => {
+          e.currentTarget.style.background =
+            e.currentTarget.innerText.replaceAll("\n", "") ? "inherit" : "none";
+          const parent = e.currentTarget.parentElement;
+          if (parent) {
+            const child = parent.firstElementChild;
+            if (child)
+              child.innerHTML = e.currentTarget.innerText.replaceAll("\n", "")
+                ? e.currentTarget.innerHTML
+                : placeholder || "";
+          }
+          val = e.currentTarget.innerHTML;
+          set(e.currentTarget.innerHTML);
+        }}
+      />
+    </div>
   );
 };
 
 export function TextEditor({
-  parent,
-  keyVal,
+  val,
   placeholder,
   remove,
   style,
   additional,
+  set,
 }: {
-  parent: Record<string, any>;
-  keyVal: string;
+  val: string;
   placeholder?: string;
   remove?: MouseEventHandler<HTMLButtonElement>;
   style?: CSSProperties;
   additional?: ReactElement;
+  set: (str: string) => void;
 }) {
   return (
     <div
@@ -65,7 +73,7 @@ export function TextEditor({
           minHeight: "inherit",
         }}
       >
-        <div>{parent[keyVal]}</div>
+        <div>{val}</div>
         <textarea
           style={{
             position: "absolute",
@@ -82,10 +90,11 @@ export function TextEditor({
             if (parentElement) {
               parentElement.children[0].innerHTML = e.target.value;
             }
-            parent[keyVal] = e.target.value;
+            val = e.target.value;
+            set(e.target.value);
           }}
-          key={parent[keyVal]}
-          defaultValue={parent[keyVal]}
+          key={val}
+          defaultValue={val}
         ></textarea>
       </div>
       {remove ? (
