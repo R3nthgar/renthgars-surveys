@@ -1,6 +1,4 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useRef, useState, useEffect } from "react";
 import {
@@ -15,7 +13,7 @@ import {
 import {
   addDoc,
   delDoc,
-  getData,
+  getDoc,
   getExists,
   getPassword,
 } from "../components/firestore";
@@ -36,7 +34,13 @@ function createSurvey(
     categories: { current: string[] };
     user: { current: User | undefined };
     username: { current: string };
-    setMode: (a: any) => void;
+    setMode: (
+      a:
+        | Record<string, never>
+        | "previewing"
+        | "choosingTemplate"
+        | "showingResults"
+    ) => void;
   },
   surveyTemplate?: Survey
 ) {
@@ -425,7 +429,7 @@ export default function Home() {
               onClick={async () => {
                 if (survey.current) {
                   if (mode != "showingResults") {
-                    const tempResults = await getData(
+                    const tempResults = await getDoc(
                       "results",
                       survey.current.ID
                     );
@@ -673,6 +677,7 @@ export default function Home() {
                     set={(str) => {
                       if (survey.current) survey.current.startScreen = str;
                     }}
+                    placeholder="Starting Page"
                     style={{
                       minHeight: "25lvh",
                       width: "90%",
@@ -809,8 +814,10 @@ export default function Home() {
                             <div className="choiceContainer">
                               {question.values.map((value, index) => (
                                 <TextEditor
-                                  parent={question.values[index]}
-                                  keyVal="option"
+                                  set={(str) => {
+                                    question.values[index].option = str;
+                                  }}
+                                  val={question.values[index].option}
                                   placeholder="Enter Option Here"
                                   remove={() => {
                                     question.values.splice(index, 1);
@@ -1017,6 +1024,7 @@ export default function Home() {
                     set={(str) => {
                       if (survey.current) survey.current.finishScreen = str;
                     }}
+                    placeholder="Finishing Page"
                     style={{
                       minHeight: "25lvh",
                       width: "90%",
@@ -1156,7 +1164,7 @@ export default function Home() {
                               reader.readAsText(file, "UTF-8");
                               reader.onload = function (evt) {
                                 if (evt.target && evt.target.result) {
-                                  const match = (line: any) =>
+                                  const match = (line: string): string[] =>
                                     [
                                       ...line.matchAll(
                                         new RegExp(
@@ -1171,16 +1179,29 @@ export default function Home() {
                                   const lines = String(evt.target.result).split(
                                     "\n"
                                   );
-                                  const heads = match(lines.shift());
-                                  const data = lines.map((line) => {
-                                    return match(line).reduce((acc, cur, i) => {
-                                      const val =
-                                        cur.length <= 0
-                                          ? null
-                                          : Number(cur) || cur;
-                                      const key = heads[i] ?? `extra_${i}`;
-                                      return { ...acc, [key]: val };
-                                    }, {});
+                                  const heads = match(lines.shift() || "");
+                                  const data: Record<
+                                    string,
+                                    string | number | null
+                                  >[] = lines.map((line) => {
+                                    return match(line).reduce(
+                                      (
+                                        acc: Record<
+                                          string,
+                                          string | number | null
+                                        >,
+                                        cur,
+                                        i
+                                      ) => {
+                                        const val =
+                                          cur.length <= 0
+                                            ? null
+                                            : Number(cur) || cur;
+                                        const key = heads[i] ?? `extra_${i}`;
+                                        return { ...acc, [key]: val };
+                                      },
+                                      {}
+                                    );
                                   });
                                   if (overpage.type == "importing") {
                                     heads
@@ -1217,7 +1238,7 @@ export default function Home() {
                                             option: string;
                                             categories: Record<string, number>;
                                           } = {
-                                            option: val.Text,
+                                            option: String(val.Text),
                                             categories: {},
                                           };
                                           delete val.Text;
@@ -1225,12 +1246,14 @@ export default function Home() {
                                           option.categories = Object.entries(
                                             val
                                           )
-                                            .filter(([key, val]) => val)
+                                            .filter(([, val]) => val)
                                             .reduce(
                                               (
-                                                res: Record<string, any>,
+                                                res: Record<string, number>,
                                                 [key, val]
-                                              ) => ((res[key] = val), res),
+                                              ) => (
+                                                (res[key] = Number(val)), res
+                                              ),
                                               {}
                                             );
                                           group.questions[
@@ -1252,7 +1275,7 @@ export default function Home() {
                                             type: translator[
                                               val["Question Type"]
                                             ],
-                                            name: val.Text,
+                                            name: String(val.Text),
                                             values: [],
                                           });
                                         }
@@ -1262,7 +1285,7 @@ export default function Home() {
                                   setOverpage(undefined);
                                 }
                               };
-                              reader.onerror = function (evt) {
+                              reader.onerror = function () {
                                 console.log("error");
                               };
                             }
@@ -1493,7 +1516,7 @@ export default function Home() {
                         <button
                           className="borderer"
                           onClick={async () => {
-                            results.current = await getData(
+                            results.current = await getDoc(
                               "results",
                               survey.current?.ID || ""
                             );
