@@ -18,7 +18,7 @@ import {
   getPassword,
 } from "../components/firestore";
 import { surveyTemplates } from "../surveyTemplates";
-import { encrypt } from "renthgars-encrypter";
+import { encrypt } from "../components/encrypter";
 import { TextEditor, RichTextEditor } from "../components/textEditor";
 import { cookies, IDgen } from "../components/utilities";
 
