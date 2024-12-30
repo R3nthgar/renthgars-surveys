@@ -12,7 +12,9 @@ If you're not using Firestore, then replace the functions in app/components/fire
 
 This project also uses functions to secure passwords.
 
-Create an environmental variable called ENCRYPTER_PRIVATEKEY, and set it to a random string.
+To continue using these functions, create an environmental variable called ENCRYPTER_PRIVATEKEY, and set it to a random string.
+
+If you don't want to use these functions, replace the functions in app/components/encrypter.ts.
 
 ## Running the server
 
