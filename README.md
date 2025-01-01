@@ -31,10 +31,6 @@ npm run build
 npm run start
 ```
 
-## How To Use
-
-Once the server is running, create surveys by going to the editor subdirectory of your domain and creating an account. To take surveys, go to the main directory of your domain.
-
 ## Customizing
 
 You can change the title by modifying the metadata export in app/layout.tsx
