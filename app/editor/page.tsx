@@ -1180,29 +1180,20 @@ export default function Home() {
                                     "\n"
                                   );
                                   const heads = match(lines.shift() || "");
-                                  const data: Record<
-                                    string,
-                                    string | number | null
-                                  >[] = lines.map((line) => {
-                                    return match(line).reduce(
-                                      (
-                                        acc: Record<
-                                          string,
-                                          string | number | null
-                                        >,
-                                        cur,
-                                        i
-                                      ) => {
-                                        const val =
-                                          cur.length <= 0
-                                            ? null
-                                            : Number(cur) || cur;
-                                        const key = heads[i] ?? `extra_${i}`;
-                                        return { ...acc, [key]: val };
-                                      },
-                                      {}
-                                    );
-                                  });
+                                  const data: Record<string, string>[] =
+                                    lines.map((line) => {
+                                      return match(line).reduce(
+                                        (
+                                          acc: Record<string, string>,
+                                          cur,
+                                          i
+                                        ) => {
+                                          const key = heads[i] ?? `extra_${i}`;
+                                          return { ...acc, [key]: cur };
+                                        },
+                                        {}
+                                      );
+                                    });
                                   if (overpage.type == "importing") {
                                     heads
                                       .filter(
@@ -1238,7 +1229,7 @@ export default function Home() {
                                             option: string;
                                             categories: Record<string, number>;
                                           } = {
-                                            option: String(val.Text),
+                                            option: val.Text,
                                             categories: {},
                                           };
                                           delete val.Text;
@@ -1246,7 +1237,7 @@ export default function Home() {
                                           option.categories = Object.entries(
                                             val
                                           )
-                                            .filter(([, val]) => val)
+                                            .filter(([, val]) => Number(val))
                                             .reduce(
                                               (
                                                 res: Record<string, number>,
@@ -1275,7 +1266,7 @@ export default function Home() {
                                             type: translator[
                                               val["Question Type"]
                                             ],
-                                            name: String(val.Text),
+                                            name: val.Text,
                                             values: [],
                                           });
                                         }
